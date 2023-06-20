@@ -1,0 +1,30 @@
+name: Releases
+
+on:
+  create:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel setuptools
+      - name: Build ptterm
+        run: |
+          python setup.py bdist_wheel
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*.whl"
+          token: ${{ secrets.GITHUB_TOKEN }}
